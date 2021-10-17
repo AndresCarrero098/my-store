@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const routerApi = require('./routes');
 
 const {
@@ -25,6 +26,18 @@ routerApi(app);
 app.use(logErrors);
 app.use(boomErrorHandler);
 app.use(errorHandler);
+
+const whiteList = ['http://localhost:8080', 'https://myapp.com'];
+const options = {
+  origin: (origin, callback) => {
+    if (whiteList.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('not allowed'));
+    }
+  },
+};
+app.use(cors(options));
 
 app.listen(port, () => {
   console.log(`Ejecutando en puerto ${port}`);
